@@ -527,13 +527,15 @@ module.exports = msgHandler = async (bocchi = new Client(), message) => {
                 await bocchi.reply(from, ind.wait(), id)
                 await fbdl(url)
                     .then(async (res) => {
-                        console.log((decodeURIComponent(res)))
-                        await bocchi.sendFileFromUrl(from, decodeURIComponent(res), 'videofb.mp4', '', id)
-                        console.log(from, 'Success sending Facebook video!')
+                        if (res) {
+                            await bocchi.sendFileFromUrl(from, decodeURIComponent(res), 'videofb.mp4', '', id)
+                            console.log(from, 'Success sending Facebook video!')
+                        }
+                        await bocchi.reply(from, 'Error!\nPrivate video', id)
                     })
                     .catch(async (err) => {
                         console.error(err)
-                        await bocchi.reply(from, 'Error!', id)
+                        await bocchi.reply(from, 'Error!\nPrivate video', id)
                     })
 
                 break;
