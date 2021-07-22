@@ -12,7 +12,7 @@ const fs = require('fs-extra')
 const { groupLimit, memberLimit } = require('./database/bot/setting.json')
 
 const start = (bocchi = new Client()) => {
-    console.log(color(figlet.textSync('BocchiBot', 'Larry 3D'), 'cyan'))
+    // console.log(color(figlet.textSync('BocchiBot', 'Larry 3D'), 'cyan'))
     console.log(color('=> Bot successfully loaded! Database:', 'yellow'), color(loader.getAllDirFiles('./database').length), color('Library:', 'yellow'), color(loader.getAllDirFiles('./lib').length), color('Function:', 'yellow'), color(loader.getAllDirFiles('./function').length))
     console.log(color('=> Source code version:', 'yellow'), color(version))
     console.log(color('[BOCCHI]'), color('BocchiBot is now online!', 'yellow'))
@@ -20,7 +20,7 @@ const start = (bocchi = new Client()) => {
 
     // Uncomment code di bawah untuk mengaktifkan auto-update file changes. Tidak disarankan untuk long-time use.
     // Uncomment code below to activate auto-update file changes. Not recommended for long-time use.
-    loader.nocache('../message/index.js', (m) => console.log(color('[WATCH]', 'orange'), color(`=> '${m}'`, 'yellow'), 'file is updated!'))
+    // loader.nocache('../message/index.js', (m) => console.log(color('[WATCH]', 'orange'), color(`=> '${m}'`, 'yellow'), 'file is updated!'))
 
     bocchi.onStateChanged((state) => {
         console.log(color('[BOCCHI]'), state)

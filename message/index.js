@@ -18,6 +18,7 @@
 
 /********** MODULES **********/
 const { decryptMedia, Client } = require('@open-wa/wa-automate')
+const http = require('https');
 const fs = require('fs-extra')
 const Nekos = require('nekos.life')
 const neko = new Nekos()
@@ -56,8 +57,8 @@ const cron = require('node-cron')
 
 /********** UTILS **********/
 const { msgFilter, color, processTime, isUrl, createSerial } = require('../tools')
-const { nsfw, weeaboo, downloader, fun, misc, toxic } = require('../lib')
-const fbdl = require('../lib/downloader/facebook.js')
+const { nsfw, weeaboo, downloader, fun, misc, toxic, facebook, youtube } = require('../lib')
+
 const { uploadImages } = require('../tools/fetcher')
 const { ind, eng } = require('./text/lang/')
 const { daily, level, register, afk, reminder, premium, limit } = require('../function')
@@ -525,7 +526,7 @@ module.exports = msgHandler = async (bocchi = new Client(), message) => {
                 if (limit.isLimit(sender.id, _limit, limitCount, isPremium, isOwner)) return await bocchi.reply(from, ind.limit(), id)
                 limit.addLimit(sender.id, _limit, isPremium, isOwner)
                 await bocchi.reply(from, ind.wait(), id)
-                await fbdl(url)
+                await facebook.fbdl(url)
                     .then(async (res) => {
                         if (res) {
                             await bocchi.sendFileFromUrl(from, decodeURIComponent(res), 'videofb.mp4', '', id)
@@ -537,7 +538,6 @@ module.exports = msgHandler = async (bocchi = new Client(), message) => {
                         console.error(err)
                         await bocchi.reply(from, 'Error!\nPrivate video', id)
                     })
-
                 break;
             case prefix + 'ytmp3':
                 if (!isRegistered) return await bocchi.reply(from, ind.notRegistered(), id)
@@ -545,16 +545,19 @@ module.exports = msgHandler = async (bocchi = new Client(), message) => {
                 if (limit.isLimit(sender.id, _limit, limitCount, isPremium, isOwner)) return await bocchi.reply(from, ind.limit(), id)
                 limit.addLimit(sender.id, _limit, isPremium, isOwner)
                 await bocchi.reply(from, ind.wait(), id)
-                downloader.ytdl(url)
+                youtube.ytmp3(url, sender.id)
                     .then(async (res) => {
-                        if (res.status === 'error') {
-                            await bocchi.reply(from, res.pesan, id)
+                        console.log(res);
+                        if (!res.status) {
+                            await bocchi.reply(from, "Gagal kak :'(", id)
                         } else if (Number(res.size.split(' MB')[0]) >= 30) {
                             await bocchi.reply(from, ind.videoLimit(), id)
                         } else {
                             await bocchi.sendFileFromUrl(from, res.thumbnail, `${res.title}.jpg`, ind.ytFound(res), id)
-                            await bocchi.sendFileFromUrl(from, res.url_audio, `${res.title}.mp3`, '', id)
+                            // await bocchi.sendFileFromUrl(from, res.dlurl, `${res.title}.mp3`, '', id)
+                            await bocchi.sendAudio(from, `./temp/${sender.id}_ytmp3.mp3`)
                             console.log('Success sending YouTube video!')
+                            fs.unlinkSync(`./temp/${sender.id}_ytmp3.mp3`)
                         }
                     })
                     .catch(async (err) => {
@@ -568,15 +571,15 @@ module.exports = msgHandler = async (bocchi = new Client(), message) => {
                 if (limit.isLimit(sender.id, _limit, limitCount, isPremium, isOwner)) return await bocchi.reply(from, ind.limit(), id)
                 limit.addLimit(sender.id, _limit, isPremium, isOwner)
                 await bocchi.reply(from, ind.wait(), id)
-                downloader.ytdl(url)
+                youtube.ytdl(url)
                     .then(async (res) => {
-                        if (res.status === 'error') {
-                            await bocchi.reply(from, res.pesan, id)
+                        if (!res.status) {
+                            await bocchi.reply(from, "Gagal kak :'(", id)
                         } else if (Number(res.size.split(' MB')[0]) >= 30) {
                             await bocchi.reply(from, ind.videoLimit(), id)
                         } else {
                             await bocchi.sendFileFromUrl(from, res.thumbnail, `${res.title}.jpg`, ind.ytFound(res), id)
-                            await bocchi.sendFileFromUrl(from, res.url_video, `${res.title}.mp4`, '', id)
+                            await bocchi.sendFileFromUrl(from, res.dlurl, `${res.title}.mp4`, '', id)
                             console.log('Success sending YouTube video!')
                         }
                     })

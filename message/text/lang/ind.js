@@ -99,9 +99,8 @@ exports.ytFound = (res) => {
 
 Video ditemukan!
 ➸ *Judul*: ${res.title}
-➸ *Deskripsi*:
-${res.desc}
-➸ *Durasi*: ${res.duration}
+➸ *Size*:
+${res.size}
 
 Media sedang dikirim, mohon tunggu...
     `
